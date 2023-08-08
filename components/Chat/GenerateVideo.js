@@ -81,7 +81,7 @@ export default function GenerateVideo(props) {
 
   // function to check video status using the backend API and update videoUrl
   async function checkVideo() {
-    // we only check video status if processing is true
+    // we only check video status if processing is true ee
     if (processing) {
       try {
         // define api url

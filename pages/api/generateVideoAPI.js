@@ -38,7 +38,7 @@ export default async function handler(req, res) {
           ],
         },
       },
-      source_url:
+      source_url: // my photo
         "https://create-images-results.d-id.com/auth0%7C64c07418f38f4edf010d94b7/upl_mCgPnzPAfr3QVxrDyzmNp/image.png",
     });
 

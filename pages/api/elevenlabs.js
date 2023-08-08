@@ -15,7 +15,7 @@ async function deleteOldFiles() {
   if (!fs.existsSync("./public/resp")) {
     fs.mkdirSync("./public/resp");
   }
-  // -------------------------------------
+  // ---------------------------------------
 
   const folderPath = path.join(process.cwd(), "public", "resp");
   const files = fs.readdirSync("./public/resp");
