@@ -10,6 +10,13 @@ const EXPIRE_DAYS = process.env.NEXT_PUBLIC_EXPIRE_DAYS;
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function deleteOldFiles() {
+
+  // create directory if does not exist
+  if (!fs.existsSync("./public/resp")) {
+    fs.mkdirSync("./public/resp");
+  }
+  // -------------------------------------
+
   const folderPath = path.join(process.cwd(), "public", "resp");
   const files = fs.readdirSync("./public/resp");
 
@@ -28,7 +35,7 @@ async function deleteOldFiles() {
   });
 };
 
-export default async function handler(req, res) {
+/*export default async function handler(req, res) {
   if (req.method === "POST") {
     const timestamp = new Date().getTime();
     const filename = `public/resp/r_${timestamp.toFixed(0)}.mp3`;
@@ -61,6 +68,60 @@ export default async function handler(req, res) {
       console.error(
         `An error occurred while converting text to speech: ${error}`
       );
+    }
+  } else {
+    res.status(404).json({ error: "Not found" });
+  }
+}*/
+
+export default async function handler(req, res) {
+  // allow only POST method
+  if (req.method === "POST") {
+    // add error handling in case we have any problems with the filesystem
+    try {
+      // get the current timestamp
+      const timestamp = new Date().getTime();
+      const filename = `public/resp/r_${timestamp.toFixed(0)}.mp3`;
+
+      // get the message and key from the request body
+      const { message, key } = req.body;
+
+      // delete old files
+      await deleteOldFiles();
+
+      // check if the key is valid
+      if (key !== LOCAL_KEY) {
+        res.status(404).json({ error: "Access denied" });
+        return;
+      }
+
+      // check if the message is empty
+      if (message.length == 0) {
+        res.status(404).json({ error: "Empty message" });
+        return;
+      }
+
+      try {
+        // call the API to convert text to speech
+        textToSpeech(API_KEY, message, VOICE_ID, filename).then(  // after the conversion is done return the filename
+          async (response) => {
+            res
+              .status(200)
+              .json({ error: null, response: timestamp.toFixed(0) });
+          }
+        );
+      } catch (error) {
+        console.error(
+          `An error occurred while converting text to speech: ${error}`
+        );
+      }
+    } catch (error) {
+      console.error(
+        `An error occurred while converting text to speech: ${error}`
+      );
+      res
+        .status(404)
+        .json({ error: "An error occurred while converting text to speech" });
     }
   } else {
     res.status(404).json({ error: "Not found" });

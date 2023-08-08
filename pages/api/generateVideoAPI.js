@@ -44,28 +44,36 @@ export default async function handler(req, res) {
 
     console.log(payload);
 
-    const response = await fetch(generate_url, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${DID_KEY}`,
-        "Content-Type": "application/json",
-        Accept: "*/*",
-        Connection: "keep-alive",
-      },
-      body: payload,
-    });
-
-    console.log('generating video in the row');
-
-    response
-      .json()
-      .then((data) => {
-        console.log(data);
-        res.status(200).json({ response: data });
-      })
-      .catch((err) => {
-        res.status(500).json({ error: err });
+    try {
+      const response = await fetch(generate_url, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${DID_KEY}`,
+          "Content-Type": "application/json",
+          Accept: "*/*",
+          Connection: "keep-alive",
+        },
+        body: payload,
       });
+
+      console.log('generating video in the row');
+
+      response
+        .json()
+        .then((data) => {
+          console.log(data);
+          res.status(200).json({ response: data });
+        })
+        .catch((err) => {
+          res.status(500).json({ error: err });
+        });
+    }
+
+    catch (e) {
+      console.error(e);
+      res.status(500).json({ error: e });
+    }
+
   } else {
     res.status(404).json({ error: "Not found" });
   }
